@@ -70,7 +70,7 @@ jobs:
 
       # Build the variant 'Staging' in release mode
       - name: Assemble the Staging build pointing to Dev server
-        run: ./gradlew assembleStagingRelease --stacktrace
+        run: ./gradlew assembleDebug --stacktrace
 
       # Upload the artifact to Github - https://github.com/actions/upload-artifact
       - name: Upload Artifacts
