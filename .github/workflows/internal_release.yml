@@ -46,9 +46,9 @@ jobs:
       # https://stefma.medium.com/how-to-store-a-android-keystore-safely-on-github-actions-f0cef9413784
       - name: Prepare keystore
         run: |
-          echo "${{ secrets.KEYSTORE }}" > my-application.jks.asc
+          echo "${{ secrets.KEYSTORE }}" > tracksynq-mobile.jks.asc
           mkdir -p app/keystore
-          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/my-application.jks my-application.jks.asc
+          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/tracksynq-mobile.jks tracksynq-mobile.jks.asc
 
       - name: Make gradlew executable and clean project
         run: |
