@@ -1,6 +1,7 @@
 package com.kiran.myapplication.base
 
 import android.app.Application
+import com.google.firebase.FirebaseApp
 import com.kiran.myapplication.di.getModules
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -20,6 +21,5 @@ class MyApplication : Application() {
             androidContext(this@MyApplication)
             getModules()
         }
-
     }
 }

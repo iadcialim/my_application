@@ -26,6 +26,7 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+        # set secrets in https://github.com/kiranshaw-qi/my_application/settings/secrets/actions/new
       - name: Set secrets & keys in local.properties
         env:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -46,9 +47,9 @@ jobs:
       # https://stefma.medium.com/how-to-store-a-android-keystore-safely-on-github-actions-f0cef9413784
       - name: Prepare keystore
         run: |
-          echo "${{ secrets.KEYSTORE }}" > tracksynq-mobile.jks.asc
+          echo "${{ secrets.KEYSTORE }}" > CarBooking.keystore.asc
           mkdir -p app/keystore
-          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/tracksynq-mobile.jks tracksynq-mobile.jks.asc
+          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/CarBooking.keystore CarBooking.keystore.asc
 
       - name: Make gradlew executable and clean project
         run: |
