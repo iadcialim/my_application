@@ -140,7 +140,6 @@ jobs:
 #          webhook-uri: ${{ secrets.MSTEAMS_WEBHOOK }}
 
 
-
 #            # Build the variant 'DriverDev' in release mode
 #            - name: Build the Driver Release app bundle pointing to Prod server
 #              run: ./gradlew :app:bundleProdRelease --stacktrace
