@@ -47,7 +47,7 @@ jobs:
       # https://stefma.medium.com/how-to-store-a-android-keystore-safely-on-github-actions-f0cef9413784
       - name: Prepare keystore
         run: |
-          echo "${{ secrets.KEYSTORE }}" > CarBooking.keystore.asc
+          echo "${{ secrets.KEYSTORE }}" > Carbooking.keystore.asc
           mkdir -p app/keystore
           gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/CarBooking.keystore Carbooking.keystore.asc
 
