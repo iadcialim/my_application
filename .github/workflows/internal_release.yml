@@ -47,9 +47,9 @@ jobs:
       # you should have gnugp (mac - https://formulae.brew.sh/formula/gnupg)
       - name: Prepare keystore
         run: |
-          echo "${{ secrets.KEYSTORE }}" > CarBooking.keystore.asc
+          echo "${{ secrets.KEYSTORE_V2 }}" > CarBooking.keystore.asc
           mkdir -p app/keystore
-          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/CarBooking.keystore CarBooking.keystore.asc
+          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE_V2 }}" -d -o app/keystore/CarBooking.keystore CarBooking.keystore.asc
 
       # Build in release mode
       - name: Assemble
