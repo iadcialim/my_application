@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "705185142849",
+    "project_id": "myapplication-2072d",
+    "storage_bucket": "myapplication-2072d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705185142849:android:24a1e34cf8be5ff0f00ec0",
+        "android_client_info": {
+          "package_name": "com.kiran.myapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705185142849-j6vquoamq223hv9vk8uu25uvihc13km1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCIx3KBWAOvb0mbdijBQ3XhWipBv0F9kXI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705185142849-j6vquoamq223hv9vk8uu25uvihc13km1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,56 @@
+# This is the workflow when a pull request is created
+
+name: Create Internal Release
+
+# Controls when the action will run.
+on:
+  push:
+    # Sequence of patterns matched against refs/tags
+    tags:
+      - "v*internal-release" # Push events to matching v*internal-release, i.e. v1.0-internal-release
+
+  # Allows you to run this workflow manually from the Actions tab
+  # workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository with the tag reference
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Set secrets & keys in local.properties
+        env:
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyAlias: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          keyPassword: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
+          jFrogArtifactoryUser: ${{ secrets.ARTIFACTORY_USERNAME }}
+          jFrogArtifactoryPassword: ${{ secrets.ARTIFACTORY_API_KEY }}
+
+        run: |
+          echo keyStorePassword=$keyStorePassword >> ./local.properties
+          echo keyAlias=$keyAlias >> ./local.properties
+          echo keyPassword=$keyPassword >> ./local.properties
+          echo jFrogArtifactoryUser=$jFrogArtifactoryUser >> ./local.properties
+          echo jFrogArtifactoryPassword=$jFrogArtifactoryPassword >> ./local.properties
+
+          cat ./local.properties
+
+      # Follow this tutorial: https://stefma.medium.com/how-to-store-a-android-keystore-safely-on-github-actions-f0cef9413784, to save the string for secrets.KEYSTORE
+      # you should have gnugp (mac - https://formulae.brew.sh/formula/gnupg)
+      - name: Prepare keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_V2 }}" > CarBooking.keystore.asc
+          mkdir -p app/keystore
+          gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE_V2 }}" -d -o app/keystore/CarBooking.keystore CarBooking.keystore.asc
+
+      # Build in release mode
+      - name: Assemble
+        run: ./gradlew assembleRelease --stacktrace
