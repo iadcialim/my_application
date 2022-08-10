@@ -26,7 +26,6 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
-        # set secrets in https://github.com/kiranshaw-qi/my_application/settings/secrets/actions/new
       - name: Set secrets & keys in local.properties
         env:
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -44,111 +43,14 @@ jobs:
 
           cat ./local.properties
 
-      # https://stefma.medium.com/how-to-store-a-android-keystore-safely-on-github-actions-f0cef9413784
+      # Follow this tutorial: https://stefma.medium.com/how-to-store-a-android-keystore-safely-on-github-actions-f0cef9413784, to save the string for secrets.KEYSTORE
+      # you should have gnugp (mac - https://formulae.brew.sh/formula/gnupg)
       - name: Prepare keystore
         run: |
           echo "${{ secrets.KEYSTORE }}" > CarBooking.keystore.asc
           mkdir -p app/keystore
           gpg --batch --passphrase "${{ secrets.KEYSTORE_PASSPHRASE }}" -d -o app/keystore/CarBooking.keystore CarBooking.keystore.asc
 
-      - name: Make gradlew executable and clean project
-        run: |
-          chmod +x ./gradlew
-          ./gradlew clean --stacktrace
-
-      # Prepare the release notes for Firebase Distribution
-      - name: Read release_notes.txt file
-        id: releaseNotes
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./release_notes.txt
-
-      # https://stackoverflow.com/a/61699863
-      - name: Echo release_notes.txt
-        run: |
-          echo "${{ steps.releaseNotes.outputs.content }}"
-          echo "Commit ID = ${{ steps.vars.outputs.sha_short }}"
-
-      # Build the variant 'Staging' in release mode
-      - name: Assemble the Staging build pointing to Dev server
-        run: ./gradlew assembleDebug --stacktrace
-
-      # Upload the artifact to Github - https://github.com/actions/upload-artifact
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: mapping artifact
-          path: app/build/outputs/mapping/stagingRelease/mapping.txt
-          #      app/build/outputs/apk/
-          #     app/build/outputs/bundle/stagingDebug
-
-
-      # Uploads apk to Firebase - https://github.com/wzieba/Firebase-Distribution-Github-Action
-      - name: Upload Dev apk to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: "1:808552038711:android:690ef435620057c7895ab2"
-          token: ${{secrets.FIREBASE_TOKEN}}
-          groups: "testteam"
-          releaseNotes: ${{ steps.releaseNotes.outputs.content }}
-          file: app/build/outputs/apk/stagingRelease/Share-Car-staging-release.apk
-
-      # Build the variant 'ProdRelease' in release mode
-      - name: Assemble the Prod Release build pointing to Prod server
-        run: ./gradlew assembleProdRelease --stacktrace
-
-      # Uploads apk to Firebase - https://github.com/wzieba/Firebase-Distribution-Github-Action
-      - name: Upload Prod apk to Firebase App Distribution
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: "1:808552038711:android:41c26e15fc129c67895ab2"
-          token: ${{secrets.FIREBASE_TOKEN}}
-          groups: "testteam"
-          releaseNotes: ${{ steps.releaseNotes.outputs.content }}
-          file: app/build/outputs/apk/prodRelease/Share-Car-prod-release.apk
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: ${{ steps.releaseNotes.outputs.content }}
-          draft: false
-          prerelease: true
-
-
-      # Attach assets to the release - https://github.com/actions/upload-release-asset
-      # - name: Upload Release Asset
-      #   id: upload-release-asset
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-      #     asset_path: ./my-artifact.zip
-      #     asset_name: my-artifact.zip
-      #     asset_content_type: application/zip
-
-      # Send notification in MS Teams - https://github.com/marketplace/actions/opsless-ms-teams-github-actions
-#      - name: Send MS Teams notification
-#        uses: opsless/ms-teams-github-actions@main
-#        if: always()
-#        with:
-#          github-token: ${{ secrets.GITHUB_TOKEN }}
-#          webhook-uri: ${{ secrets.MSTEAMS_WEBHOOK }}
-
-
-
-#            # Build the variant 'DriverDev' in release mode
-#            - name: Build the Driver Release app bundle pointing to Prod server
-#              run: ./gradlew :app:bundleProdRelease --stacktrace
-#
-#                # Upload the artifact to Github - https://github.com/actions/upload-artifact
-#                - name: Upload App bundle
-#                  uses: actions/upload-artifact@v2
-#                  with:
-#                    name: aab artifact
-#                    path: app/build/outputs/bundle/prodRelease
+      # Build in release mode
+      - name: Assemble
+        run: ./gradlew assembleRelease --stacktrace
